@@ -2,66 +2,128 @@ package com.currencyexchangediscount.assignment.currencyexchangediscount.service
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@TestPropertySource("classpath:application.properties")
-class CurrencyExchangeServiceTest {
+@ExtendWith(MockitoExtension.class)
+public class CurrencyExchangeServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
 
-    @InjectMocks // Automatically injects the mocked RestTemplate
+    @Mock
+    private CacheManager cacheManager;
+
+    @InjectMocks
     private CurrencyExchangeService currencyExchangeService;
 
-    @Value("${exchange.api.url}")
-    private String apiUrl;
-
-    @Value("${exchange.api.key}")
-    private String apiKey;
-
-    private Map<String, Object> mockResponse;
-
     @BeforeEach
-    void setUp() {
-        mockResponse = Map.of(
-                "result", "success",
-                "base_code", "USD",
-                "conversion_rates", Map.of(
-                        "USD", 1.0,
-                        "EUR", 0.89,
-                        "INR", 82.64
-                )
-        );
-
-        // Mock the RestTemplate behavior
-        Mockito.when(restTemplate.getForObject(anyString(), Mockito.eq(Map.class))).thenReturn(mockResponse);
+    public void setUp() {
+        cacheManager = new ConcurrentMapCacheManager("exchangeRates");
+        currencyExchangeService = new CurrencyExchangeService();
     }
 
     @Test
-    void testGetExchangeRates_ShouldReturnSuccess() {
-        // Arrange
+    public void testGetExchangeRates_success() {
+        // Given
         String baseCurrency = "USD";
-        String expectedUrl = String.format("%s/latest/%s?apikey=%s", apiUrl, baseCurrency, apiKey);
+        String url = "https://open.er-api.com/v6/latest/USD?apikey=b42152b3c8054b014b0fe388";
+        Map<String, Object> mockResponse = Map.of(
+                "rates", Map.of("EUR", 0.85, "GBP", 0.75)
+        );
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(mockResponse);
 
-        // Act
-        Map<String, Object> exchangeRates = currencyExchangeService.getExchangeRates(baseCurrency);
+        // When
+        Map<String, Object> result = currencyExchangeService.getExchangeRates(baseCurrency);
 
-        // Assert
-        assertThat(exchangeRates).isNotNull();
-        assertThat(exchangeRates.get("result")).isEqualTo("success");
-        assertThat(exchangeRates.get("base_code")).isEqualTo(baseCurrency);
+        // Then
+        assertNotNull(result);
+        assertTrue(result.containsKey("rates"));
+        assertEquals(0.85, ((Map<String, Double>) result.get("rates")).get("EUR"));
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(Map.class));
+    }
 
+    @Test
+    public void testGetExchangeRates_failure() {
+        // Given
+        String baseCurrency = "USD";
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenThrow(new RuntimeException("API call failed"));
+
+        // When & Then
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            currencyExchangeService.getExchangeRates(baseCurrency);
+        });
+
+        assertEquals("API call failed", exception.getMessage());
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(Map.class));
+    }
+
+    @Test
+    public void testGetExchangeRate_cachedValue() {
+        // Given
+        String baseCurrency = "USD";
+        String targetCurrency = "EUR";
+        Map<String, Object> mockResponse = Map.of(
+                "rates", Map.of("EUR", 0.85, "GBP", 0.75)
+        );
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(mockResponse);
+
+        // First call to get exchange rate (should call the API)
+        double rate1 = currencyExchangeService.getExchangeRate(baseCurrency, targetCurrency);
+
+        // Second call to get exchange rate (should use cached value)
+        double rate2 = currencyExchangeService.getExchangeRate(baseCurrency, targetCurrency);
+
+        // Then
+        assertEquals(0.85, rate1);
+        assertEquals(0.85, rate2); // The rate should be cached
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(Map.class)); // Only one API call
+    }
+
+    @Test
+    public void testGetExchangeRate_defaultRate_whenNotFound() {
+        // Given
+        String baseCurrency = "USD";
+        String targetCurrency = "AUD"; // This rate will not be available in the mocked response
+        Map<String, Object> mockResponse = Map.of(
+                "rates", Map.of("EUR", 0.85, "GBP", 0.75)
+        );
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(mockResponse);
+
+        // When
+        double result = currencyExchangeService.getExchangeRate(baseCurrency, targetCurrency);
+
+        // Then
+        assertEquals(1.0, result); // Default rate when not found
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(Map.class));
+    }
+
+    @Test
+    public void testGetExchangeRate_foundRate() {
+        // Given
+        String baseCurrency = "USD";
+        String targetCurrency = "EUR";
+        Map<String, Object> mockResponse = Map.of(
+                "rates", Map.of("EUR", 0.85, "GBP", 0.75)
+        );
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(mockResponse);
+
+        // When
+        double result = currencyExchangeService.getExchangeRate(baseCurrency, targetCurrency);
+
+        // Then
+        assertEquals(0.85, result); // The rate for EUR should be returned
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(Map.class));
     }
 }

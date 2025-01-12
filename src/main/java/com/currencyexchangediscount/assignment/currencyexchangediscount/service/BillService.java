@@ -3,6 +3,7 @@ package com.currencyexchangediscount.assignment.currencyexchangediscount.service
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.request.BillRequest;
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.response.BillResponse;
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.response.ItemResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version 1.0
  */
 @Service
+@Slf4j
 public class BillService {
 
     private static final Logger logger = LoggerFactory.getLogger(BillService.class);
@@ -46,7 +48,7 @@ public class BillService {
      * @return A BillResponse containing the calculated details for the bill, including itemized responses and totals.
      */
     public BillResponse generateBill(BillRequest billRequest) {
-        logger.info("Generating bill for user type: {}, tenure: {}, original currency: {}, target currency: {}",
+        log.info("Generating bill for user type: {}, tenure: {}, original currency: {}, target currency: {}",
                 billRequest.getUserType(), billRequest.getCustomerTenure(),
                 billRequest.getOriginalCurrency(), billRequest.getTargetCurrency());
 
@@ -57,18 +59,18 @@ public class BillService {
         // Get the exchange rate for currency conversion
         Double conversionRate = currencyExchangeService.getExchangeRate(
                 billRequest.getOriginalCurrency(), billRequest.getTargetCurrency());
-        logger.info("Conversion rate from {} to {}: {}", billRequest.getOriginalCurrency(),
+        log.info("Conversion rate from {} to {}: {}", billRequest.getOriginalCurrency(),
                 billRequest.getTargetCurrency(), conversionRate);
 
         // Calculate the discount percentage based on the user type and tenure
         Double discountPercentage = discountService.calculateDiscountPercentage(
                 billRequest.getUserType(), billRequest.getCustomerTenure());
-        logger.info("Calculated discount percentage for user type {}: {}", billRequest.getUserType(), discountPercentage);
+        log.info("Calculated discount percentage for user type {}: {}", billRequest.getUserType(), discountPercentage);
 
         // Process each item in the bill request and calculate item-specific totals
         List<ItemResponse> itemResponses = billRequest.getItemRequestList().stream().map(itemRequest -> {
             double itemDiscount = itemRequest.getAmount() * discountPercentage * itemRequest.getQuantity();
-            logger.debug("Processing item: {}, Amount: {}, Discount: {}", itemRequest.getDescription(),
+            log.debug("Processing item: {}, Amount: {}, Discount: {}", itemRequest.getDescription(),
                     itemRequest.getAmount(), itemDiscount);
 
             // Build the item response and accumulate totals
@@ -85,15 +87,15 @@ public class BillService {
             originalCurrencyTotal.updateAndGet(v -> v + itemResponse.getOriginalCurrencyPreDiscount());
             originalCurrencyTotalPercentageDiscount.updateAndGet(v -> v + itemResponse.getOriginalCurrencyDiscount());
 
-            logger.debug("Updated originalCurrencyTotal: {}", originalCurrencyTotal.get());
-            logger.debug("Updated originalCurrencyTotalPercentageDiscount: {}", originalCurrencyTotalPercentageDiscount.get());
+            log.debug("Updated originalCurrencyTotal: {}", originalCurrencyTotal.get());
+            log.debug("Updated originalCurrencyTotalPercentageDiscount: {}", originalCurrencyTotalPercentageDiscount.get());
 
             return itemResponse;
         }).toList();
 
         // Calculate the bill discount, 5% of the remaining amount after percentage discount
         Double originalCurrencyBillDiscount = (double) ((int) ((originalCurrencyTotal.get() - originalCurrencyTotalPercentageDiscount.get()) / 100)) * 5;
-        logger.info("Original currency total: {}, Total percentage discount: {}, Bill discount: {}",
+        log.info("Original currency total: {}, Total percentage discount: {}, Bill discount: {}",
                 originalCurrencyTotal.get(), originalCurrencyTotalPercentageDiscount.get(), originalCurrencyBillDiscount);
 
         // Build and return the final BillResponse

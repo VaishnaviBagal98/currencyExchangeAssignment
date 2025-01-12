@@ -46,20 +46,20 @@ public class BillingController {
     public ResponseEntity<BillResponse> getBill(@RequestBody BillRequest billRequest) {
 
         // Log the received request for bill calculation
-//        log.info("Received bill request with details: {}", billRequest);
+        //log.info("Received bill request with details: {}", billRequest);
 
         try {
             // Delegate the bill calculation to the service layer
             BillResponse billResponse = billService.generateBill(billRequest);
 
             // Log the successful bill calculation
-//            log.info("Bill calculation successful. Response: {}", billResponse);
+            //log.info("Bill calculation successful. Response: {}", billResponse);
 
             // Return the calculated bill in the response body
             return ResponseEntity.ok(billResponse);
         } catch (Exception e) {
             // Log the error and return an internal server error response
-//            log.error("Error occurred while calculating the bill", e);
+            //log.error("Error occurred while calculating the bill", e);
             return ResponseEntity.status(500).build();
         }
     }
