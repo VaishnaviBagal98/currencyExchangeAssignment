@@ -3,10 +3,7 @@ package com.currencyexchangediscount.assignment.currencyexchangediscount.control
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.request.BillRequest;
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.response.BillResponse;
 import com.currencyexchangediscount.assignment.currencyexchangediscount.service.BillService;
-
-
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class BillingController {
 
     // Service to handle bill generation logic
-    @Autowired
-    private BillService billService;
+    private final BillService billService;
+
+    public BillingController(BillService billService) {
+        this.billService = billService;
+    }
 
     /**
      * Endpoint to calculate the bill.
@@ -46,20 +46,20 @@ public class BillingController {
     public ResponseEntity<BillResponse> getBill(@RequestBody BillRequest billRequest) {
 
         // Log the received request for bill calculation
-        //log.info("Received bill request with details: {}", billRequest);
+        log.info("Received bill request with details: {}", billRequest);
 
         try {
             // Delegate the bill calculation to the service layer
             BillResponse billResponse = billService.generateBill(billRequest);
 
             // Log the successful bill calculation
-            //log.info("Bill calculation successful. Response: {}", billResponse);
+            log.info("Bill calculation successful. Response: {}", billResponse);
 
             // Return the calculated bill in the response body
             return ResponseEntity.ok(billResponse);
         } catch (Exception e) {
             // Log the error and return an internal server error response
-            //log.error("Error occurred while calculating the bill", e);
+            log.error("Error occurred while calculating the bill", e);
             return ResponseEntity.status(500).build();
         }
     }

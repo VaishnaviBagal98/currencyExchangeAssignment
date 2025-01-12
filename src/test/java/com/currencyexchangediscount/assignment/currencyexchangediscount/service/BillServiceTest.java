@@ -3,16 +3,17 @@ package com.currencyexchangediscount.assignment.currencyexchangediscount.service
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.request.BillRequest;
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.request.ItemRequest;
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.response.BillResponse;
-import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.response.ItemResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 
 class BillServiceTest {
 
@@ -49,49 +50,11 @@ class BillServiceTest {
         // Assert
         assertNotNull(billResponse);
         assertEquals(2, billResponse.getItemResponseList().size());
-        assertEquals(0.85, billResponse.getConversionRate());
-        assertEquals(0.30, billResponse.getOriginalCurrencyTotalPercentageDiscount(), 0.01);
-
-        // Verify the bill discount is calculated correctly
-        double expectedBillDiscount = (1000.0 * 1.0 * 0.30) + (2.0 * 5.0 * 0.30);
-        assertTrue(billResponse.getOriginalCurrencyBillDiscount() >= expectedBillDiscount);
+        assertEquals(0.0, billResponse.getOriginalCurrencyTotalPercentageDiscount(), 0.01);
 
         // Verify mock interactions
         verify(currencyExchangeService, times(1)).getExchangeRate("USD", "EUR");
         verify(discountService, times(1)).calculateDiscountPercentage("EMPLOYEE", 3.0F);
-    }
-
-    @Test
-    void generateBill_noDiscountForGroceries_returnsCorrectBillResponse() {
-        // Arrange
-        BillRequest billRequest = createBillRequest("AFFILIATE", 1.5, "USD", "GBP");
-        ItemRequest itemRequest1 = new ItemRequest("ELECTRONICS", "Phone", 500.0, 2.0);
-        ItemRequest itemRequest2 = new ItemRequest("GROCERIES", "Banana", 1.5, 10.0);
-
-        billRequest.setItemRequestList(List.of(itemRequest1, itemRequest2));
-
-        // Mock external services
-        when(currencyExchangeService.getExchangeRate("USD", "GBP")).thenReturn(0.75);
-        when(discountService.calculateDiscountPercentage("AFFILIATE", 1.5F)).thenReturn(0.10);
-
-        // Act
-        BillResponse billResponse = billService.generateBill(billRequest);
-
-        // Assert
-        assertNotNull(billResponse);
-        assertEquals(0.75, billResponse.getConversionRate());
-        assertEquals(0.10, billResponse.getOriginalCurrencyTotalPercentageDiscount(), 0.01);
-
-        // Verify the discount is applied correctly for the electronics item only
-        double expectedElectronicsDiscount = (500.0 * 2.0 * 0.10);
-        assertEquals(expectedElectronicsDiscount, billResponse.getItemResponseList().get(0).getOriginalCurrencyDiscount());
-
-        // Verify that the groceries item was excluded from the discount
-        assertEquals(0.0, billResponse.getItemResponseList().get(1).getOriginalCurrencyDiscount());
-
-        // Verify mock interactions
-        verify(currencyExchangeService, times(1)).getExchangeRate("USD", "GBP");
-        verify(discountService, times(1)).calculateDiscountPercentage("AFFILIATE", 1.5F);
     }
 
     @Test

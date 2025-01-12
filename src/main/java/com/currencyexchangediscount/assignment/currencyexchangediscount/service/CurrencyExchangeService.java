@@ -2,23 +2,20 @@ package com.currencyexchangediscount.assignment.currencyexchangediscount.service
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
 /**
  * Service responsible for fetching exchange rates for currency conversion.
- * <p>
  * This service provides methods to retrieve the exchange rates from an external API and cache them for performance optimization.
  * It can fetch the conversion rate between two currencies and store them in the cache to avoid redundant API calls.
- * </p>
- * @author Vaishnavi Bagal
- * @version 1.0
  */
 @Service
 public class CurrencyExchangeService {
@@ -33,35 +30,26 @@ public class CurrencyExchangeService {
     @Value("${exchange.api.key}")
     private String apiKey;
 
-    @Autowired
-    private CacheManager cacheManager;
+    private final CacheManager cacheManager;
 
     /**
      * Constructor to initialize the CurrencyExchangeService.
-     * <p>
      * Creates a new instance of RestTemplate to make HTTP requests.
-     * </p>
      */
-    public CurrencyExchangeService() {
+    public CurrencyExchangeService(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
         this.restTemplate = new RestTemplate();
     }
 
     /**
      * Retrieves the exchange rates for a given base currency from an external API.
-     * <p>
      * This method fetches exchange rates for the given base currency from an external API and returns the data in a Map format.
-     * </p>
      *
      * @param baseCurrency The base currency code (e.g., USD, EUR, etc.).
      * @return A Map containing the exchange rates for the given base currency.
      */
     public Map<String, Object> getExchangeRates(String baseCurrency) {
-        // Hardcoded API URL and key for the external exchange service
-        apiUrl = "https://open.er-api.com/v6";
-        apiKey = "b42152b3c8054b014b0fe388";
-
-        // API URL to fetch the exchange rates
-        String url = "https://open.er-api.com/v6/latest/USD?apikey=b42152b3c8054b014b0fe388";
+        String url = "https://open.er-api.com/v6/latest/USD?apikey=" + apiKey;
 
         logger.info("Fetching exchange rates for base currency: {}", baseCurrency);
         logger.debug("API URL: {}", url);
@@ -69,19 +57,32 @@ public class CurrencyExchangeService {
         try {
             // Making the API call to fetch exchange rates
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+
+            if (response == null) {
+                logger.error("Received null response from the exchange rate API for base currency: {}", baseCurrency);
+                throw new RuntimeException("Null response received from the exchange rate API.");
+            }
+
             logger.info("Exchange rates successfully fetched for base currency: {}", baseCurrency);
             return response;
+
+        } catch (HttpClientErrorException e) {
+            logger.error("HTTP error occurred while fetching exchange rates for base currency: {}. Status code: {}", baseCurrency, e.getStatusCode(), e);
+            throw new RuntimeException("HTTP error while fetching exchange rates: " + e.getStatusCode(), e);
+
+        } catch (HttpServerErrorException e) {
+            logger.error("Server error occurred while fetching exchange rates for base currency: {}. Status code: {}", baseCurrency, e.getStatusCode(), e);
+            throw new RuntimeException("Server error while fetching exchange rates: " + e.getStatusCode(), e);
+
         } catch (Exception e) {
             logger.error("Error fetching exchange rates for base currency: {}", baseCurrency, e);
-            throw e;
+            throw new RuntimeException("Unexpected error occurred while fetching exchange rates", e);
         }
     }
 
     /**
      * Retrieves the exchange rate from the base currency to the target currency, using caching to avoid redundant API calls.
-     * <p>
      * This method first checks if the exchange rate is cached. If not, it fetches the rate from the external API and caches it.
-     * </p>
      *
      * @param baseCurrency   The base currency code (e.g., USD, EUR, etc.).
      * @param targetCurrency The target currency code (e.g., GBP, INR, etc.).

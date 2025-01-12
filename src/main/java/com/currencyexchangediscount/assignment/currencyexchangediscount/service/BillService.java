@@ -4,9 +4,6 @@ import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.requ
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.response.BillResponse;
 import com.currencyexchangediscount.assignment.currencyexchangediscount.dto.response.ItemResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * and converts the amounts to the target currency. It also handles the bill's final discounts and prepares the
  * response for the client.
  * </p>
+ *
  * @author Vaishnavi Bagal
  * @version 1.0
  */
@@ -26,15 +24,16 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class BillService {
 
-    private static final Logger logger = LoggerFactory.getLogger(BillService.class);
+    private final DiscountService discountService;
 
-    @Autowired
-    private DiscountService discountService;
-
-    @Autowired
-    private CurrencyExchangeService currencyExchangeService;
+    private final CurrencyExchangeService currencyExchangeService;
 
     private final List<String> excludedCategoriesForDiscount = List.of("GROCERIES");
+
+    public BillService(DiscountService discountService, CurrencyExchangeService currencyExchangeService) {
+        this.discountService = discountService;
+        this.currencyExchangeService = currencyExchangeService;
+    }
 
     /**
      * Generates a bill based on the given request, calculating item totals, applying discounts, and converting amounts
