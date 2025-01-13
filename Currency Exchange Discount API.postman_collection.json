@@ -1,0 +1,307 @@
+{
+	"info": {
+		"_postman_id": "57646294-274b-4883-ba43-b7192e3cc4b6",
+		"name": "Currency Exchange Discount API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40819861"
+	},
+	"item": [
+		{
+			"name": "Employee Discount with Groceries and Non-Groceries",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Employee\",\n    \"customerTenure\": 3.0,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"EUR\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Groceries\",\n            \"description\": \"Milk\",\n            \"amount\": 2.0,\n            \"quantity\": 10.0\n        },\n        {\n            \"category\": \"Electronics\",\n            \"description\": \"Headphones\",\n            \"amount\": 50.0,\n            \"quantity\": 2.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bill/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Affiliate Discount without Groceries",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Affiliate\",\n    \"customerTenure\": 1.0,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"EUR\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Electronics\",\n            \"description\": \"Laptop\",\n            \"amount\": 800.0,\n            \"quantity\": 1.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bill/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Loyal Customer Discount with Groceries and Non-Groceries",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Regular\",\n    \"customerTenure\": 3.0,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"EUR\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Groceries\",\n            \"description\": \"Fruits\",\n            \"amount\": 5.0,\n            \"quantity\": 10.0\n        },\n        {\n            \"category\": \"Clothing\",\n            \"description\": \"Jacket\",\n            \"amount\": 100.0,\n            \"quantity\": 1.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bill/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Flat Discount Only for Bill Below $100",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Regular\",\n    \"customerTenure\": 1.0,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"EUR\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Groceries\",\n            \"description\": \"Snacks\",\n            \"amount\": 3.0,\n            \"quantity\": 15.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "No Discounts for New User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Regular\",\n    \"customerTenure\": 0.5,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"EUR\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Books\",\n            \"description\": \"Novel\",\n            \"amount\": 10.0,\n            \"quantity\": 5.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Flat Discount for Large Bills with Groceries",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Regular\",\n    \"customerTenure\": 2.0,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"EUR\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Groceries\",\n            \"description\": \"Weekly Supplies\",\n            \"amount\": 50.0,\n            \"quantity\": 5.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Employee Discount with Only Groceries",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Employee\",\n    \"customerTenure\": 1.0,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"EUR\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Groceries\",\n            \"description\": \"Vegetables\",\n            \"amount\": 20.0,\n            \"quantity\": 5.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bill/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Combination of Discounts and Currency Conversion",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Affiliate\",\n    \"customerTenure\": 2.0,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"GBP\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Electronics\",\n            \"description\": \"Tablet\",\n            \"amount\": 300.0,\n            \"quantity\": 1.0\n        },\n        {\n            \"category\": \"Clothing\",\n            \"description\": \"Shirt\",\n            \"amount\": 40.0,\n            \"quantity\": 2.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bill/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "No Discount for User with No Tenure",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Regular\",\n    \"customerTenure\": 0.0,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"CAD\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Furniture\",\n            \"description\": \"Chair\",\n            \"amount\": 60.0,\n            \"quantity\": 3.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bill/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Affiliate Discount with Mixed Items",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"totalAmount\": 0.0,\n    \"userType\": \"Affiliate\",\n    \"customerTenure\": 1.5,\n    \"originalCurrency\": \"USD\",\n    \"targetCurrency\": \"INR\",\n    \"itemRequestList\": [\n        {\n            \"category\": \"Groceries\",\n            \"description\": \"Rice\",\n            \"amount\": 15.0,\n            \"quantity\": 4.0\n        },\n        {\n            \"category\": \"Appliances\",\n            \"description\": \"Toaster\",\n            \"amount\": 25.0,\n            \"quantity\": 2.0\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bill/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"calculate"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
