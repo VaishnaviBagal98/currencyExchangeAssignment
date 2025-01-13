@@ -12,6 +12,7 @@ import java.util.List;
  * <p>
  * This class contains the necessary data required to generate a bill. It includes information such
  * as the total amount, user type, customer tenure, currencies involved, and a list of items.
+ *
  * @author Vaishnavi Bagal
  * @version 1.0
  * </p>

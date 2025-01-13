@@ -1,8 +1,8 @@
 package com.currencyexchangediscount.assignment.currencyexchangediscount;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Main entry point for the Currency Exchange Discount application.
@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  * annotation, which combines several useful annotations such as {@link EnableAutoConfiguration}, {@link ComponentScan},
  * and {@link Configuration} for quick setup.
  * </p>
+ *
  * @author Vaishnavi Bagal
  * @version 1.0
  */
@@ -19,20 +20,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CurrencyexchangediscountApplication {
 
-	/**
-	 * The main method that runs the Spring Boot application.
-	 * <p>
-	 * This method initializes the Spring Boot application context and starts the embedded web server.
-	 * </p>
-	 *
-	 * @param args Command line arguments passed to the application.
-	 */
-	public static void main(String[] args) {
-		log.info("Starting the Currency Exchange Discount Application...");
+    /**
+     * The main method that runs the Spring Boot application.
+     * <p>
+     * This method initializes the Spring Boot application context and starts the embedded web server.
+     * </p>
+     *
+     * @param args Command line arguments passed to the application.
+     */
+    public static void main(String[] args) {
+        log.info("Starting the Currency Exchange Discount Application...");
 
-		// Run the Spring Boot application
-		SpringApplication.run(CurrencyexchangediscountApplication.class, args);
+        // Run the Spring Boot application
+        SpringApplication.run(CurrencyexchangediscountApplication.class, args);
 
-		log.info("Currency Exchange Discount Application started successfully.");
-	}
+        log.info("Currency Exchange Discount Application started successfully.");
+    }
 }

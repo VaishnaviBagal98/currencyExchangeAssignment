@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
  * - Affiliates get a 10% discount.
  * - Users with a tenure greater than 2 years receive a 5% discount.
  * </p>
+ *
  * @author Vaishnavi Bagal
  * @version 1.0
  */

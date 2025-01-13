@@ -23,14 +23,11 @@ public class CurrencyExchangeService {
     private static final Logger logger = LoggerFactory.getLogger(CurrencyExchangeService.class);
 
     private final RestTemplate restTemplate;
-
+    private final CacheManager cacheManager;
     @Value("${exchange.api.url}")
     private String apiUrl;
-
     @Value("${exchange.api.key}")
     private String apiKey;
-
-    private final CacheManager cacheManager;
 
     /**
      * Constructor to initialize the CurrencyExchangeService.

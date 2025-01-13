@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
  * This class holds the details of a specific item that is part of the bill. It includes the category,
  * description, amount, and quantity of the item, which contribute to the total bill calculation.
  * </p>
+ *
  * @author Vaishnavi Bagal
  * @version 1.0
  */
@@ -23,6 +24,7 @@ public class ItemRequest {
      * <p>
      * This category can be used to apply specific business rules or discounts for different types of items.
      * </p>
+     *
      * @version 1.0
      */
     private String category;

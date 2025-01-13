@@ -33,5 +33,5 @@ class CurrencyexchangediscountApplicationTests {
         // Note: The method is intentionally empty. If the Spring Boot application context fails to load,
         //       this will result in a test failure.
         // If the application context starts successfully, this test will pass without any further action required.
-	}
+    }
 }

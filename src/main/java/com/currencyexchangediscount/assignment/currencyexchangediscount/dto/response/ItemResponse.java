@@ -72,7 +72,7 @@ public class ItemResponse {
      * <p>
      * This rate is used to convert the item's amount and discount from the original currency to the target currency.
      * </p>
-     *
+     * <p>
      * This field is ignored during JSON serialization to prevent exposing sensitive data.
      */
     @JsonIgnore
@@ -147,7 +147,7 @@ public class ItemResponse {
      * @return The total amount in the target currency after discount.
      */
     @JsonProperty("targetCurrencyTotal")
-    private Double getTargetCurrencyTotal(){
+    private Double getTargetCurrencyTotal() {
         Double targetCurrencyTotal = getOriginalCurrencyTotal() * conversionRate;
         logger.debug("Calculated targetCurrencyTotal: {}", targetCurrencyTotal);
         return targetCurrencyTotal;

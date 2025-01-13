@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * currency exchange details and related data. It delegates the bill calculation logic to the
  * {@link BillService} service layer.
  * </p>
+ *
  * @author Vaishnavi Bagal
  * @version 1.0
  */

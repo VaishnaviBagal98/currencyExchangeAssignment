@@ -1,12 +1,12 @@
 package com.currencyexchangediscount.assignment.currencyexchangediscount.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Configuration class for setting up caching mechanisms.
@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
  * </p>
  * The cache manager will be used throughout the application to manage cache for various services.
  * Caching is enabled globally through the {@code @EnableCaching} annotation.
+ *
  * @author Vaishnavi Bagal
  * @version 1.0
  */
