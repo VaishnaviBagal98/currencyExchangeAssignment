@@ -18,7 +18,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @Slf4j
-public class CurrencyexchangediscountApplication {
+public class CurrencyExchangeDiscountApplication {
 
     /**
      * The main method that runs the Spring Boot application.
@@ -32,7 +32,7 @@ public class CurrencyexchangediscountApplication {
         log.info("Starting the Currency Exchange Discount Application...");
 
         // Run the Spring Boot application
-        SpringApplication.run(CurrencyexchangediscountApplication.class, args);
+        SpringApplication.run(CurrencyExchangeDiscountApplication.class, args);
 
         log.info("Currency Exchange Discount Application started successfully.");
     }
