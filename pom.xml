@@ -28,6 +28,8 @@
 	</scm>
 	<properties>
         <java.version>21</java.version>
+        <sonar.analysis.mode>preview</sonar.analysis.mode>
+        <sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 	</properties>
 	<dependencies>
 		<dependency>
