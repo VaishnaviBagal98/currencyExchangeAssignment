@@ -1,0 +1,85 @@
+
+@startuml
+class BillingController {
+    - billService: BillService
+    + getBill(billRequest: BillRequest): ResponseEntity
+}
+
+class BillService {
+    - discountService: DiscountService
+    - currencyExchangeService: CurrencyExchangeService
+    - excludedCategoriesForDiscount: List<String>
+    + generateBill(billRequest: BillRequest): BillResponse
+}
+
+class DiscountService {
+    + calculateDiscountPercentage(userType: String, tenure: Float): double
+}
+
+class CurrencyExchangeService {
+    - restTemplate: RestTemplate
+    - apiUrl: String
+    - apiKey: String
+    - cacheManager: CacheManager
+    + getExchangeRates(baseCurrency: String): Map<String, Object>
+    + getExchangeRate(baseCurrency: String, targetCurrency: String): double
+}
+
+class BillRequest {
+    - userType: String
+    - customerTenure: Float
+    - originalCurrency: String
+    - targetCurrency: String
+    - itemRequestList: List<ItemRequest>
+    + getUserType(): String
+    + getCustomerTenure(): Float
+    + getOriginalCurrency(): String
+    + getTargetCurrency(): String
+    + getItemRequestList(): List<ItemRequest>
+}
+
+class ItemRequest {
+    - description: String
+    - amount: Double
+    - quantity: int
+    - category: String
+    + getDescription(): String
+    + getAmount(): Double
+    + getQuantity(): int
+    + getCategory(): String
+}
+
+class BillResponse {
+    - itemResponseList: List<ItemResponse>
+    - originalCurrencyTotalPreDiscount: double
+    - originalCurrencyTotalPercentageDiscount: double
+    - originalCurrencyBillDiscount: double
+    - conversionRate: double
+    + getItemResponseList(): List<ItemResponse>
+    + getOriginalCurrencyTotalPreDiscount(): double
+    + getOriginalCurrencyTotalPercentageDiscount(): double
+    + getOriginalCurrencyBillDiscount(): double
+    + getConversionRate(): double
+}
+
+class ItemResponse {
+    - category: String
+    - conversionRate: double
+    - originalCurrencyDiscount: double
+    - description: String
+    - originalCurrencyAmount: double
+    - quantity: int
+    + getCategory(): String
+    + getConversionRate(): double
+    + getOriginalCurrencyDiscount(): double
+    + getDescription(): String
+    + getOriginalCurrencyAmount(): double
+    + getQuantity(): int
+}
+
+BillingController --> BillService
+BillService --> DiscountService
+BillService --> CurrencyExchangeService
+BillRequest "1" --> "many" ItemRequest
+BillResponse "1" --> "many" ItemResponse
+@enduml
